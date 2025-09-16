@@ -6,9 +6,20 @@
   "scripts": {
     "start": "node start-servers.js",
     "backend": "cd QUIZB/backendQ && node server.js",
-    "dev": "python -m http.server 8080"
+    "dev": "node dev-server.js"
   },
-  "keywords": ["indian", "culture", "heritage", "quiz"],
+  "keywords": [
+    "indian",
+    "culture",
+    "heritage",
+    "quiz"
+  ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "dependencies": {
+    "child_process": "^1.0.2"
+  }
 }
