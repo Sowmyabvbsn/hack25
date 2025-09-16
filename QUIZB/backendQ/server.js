@@ -1,11 +1,10 @@
 require('dotenv').config(); // Load .env at top
 const express = require('express');
 const cors = require('cors');
-const { OpenAI } = require('openai'); // Correct import!
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const app = express();
 app.use(cors());
@@ -29,14 +28,15 @@ app.post('/quiz', async (req, res) => {
   }
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.7,
-      timeout: 30000, // 30 second timeout
+    const result = await model.generateContent({
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 2048,
+      },
     });
 
-    const content = completion.choices[0].message.content.trim();
+    const content = result.response.text().trim();
 
     let questions = null;
     try {
@@ -49,7 +49,7 @@ app.post('/quiz', async (req, res) => {
         questions = JSON.parse(content.substring(firstBracket, lastBracket + 1));
       }
     }
-    if (!questions) return res.status(400).json({ error: "OpenAI gave unexpected response" });
+    if (!questions) return res.status(400).json({ error: "Gemini gave unexpected response" });
 
     res.json({ questions });
   } catch (error) {
@@ -58,11 +58,11 @@ app.post('/quiz', async (req, res) => {
     // Handle different types of errors
     if (error.code === 'ENOTFOUND' || error.message.includes('timeout')) {
       res.status(503).json({ 
-        error: "OpenAI service temporarily unavailable. Please try again later.",
+        error: "Gemini service temporarily unavailable. Please try again later.",
         fallback: true 
       });
     } else if (error.status === 401) {
-      res.status(401).json({ error: "Invalid OpenAI API key" });
+      res.status(401).json({ error: "Invalid Gemini API key" });
     } else {
       res.status(500).json({ error: "Quiz generation failed. Please try again." });
     }

@@ -316,9 +316,9 @@ async function fetchQuizQuestions(selectedAge) {
   } catch (error) {
     console.error('Error fetching quiz questions:', error);
     
-    // Use fallback questions instead of failing completely
-    console.log("Using fallback questions due to connection issues");
-    alert("Using offline questions due to connection issues. Quiz will still work!");
+    // Use fallback questions when Gemini API fails
+    console.log("Using fallback questions due to Gemini API issues");
+    alert("Using offline questions due to API connection issues. Quiz will still work!");
     return fallbackQuestions[selectedAge] || fallbackQuestions.kids;
   }
 }
