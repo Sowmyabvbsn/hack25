@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Indian Culture Age-Based Quiz Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(120deg, #eecda3 0%, #ef629f 100%);
+      min-height: 100vh;
+      color: #1c1b1b;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+    }
+    .container {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 6px 48px rgba(0,0,0,.10);
+      padding: 36px 28px;
+      width: 95%;
+      max-width: 430px;
+      text-align: center;
+    }
+    h1 {
+      color: #e67e22;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 28px;
+      color: #1a1a1a;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 12px;
+      text-align: left;
+      color: #444;
+      letter-spacing: 0.5px;
+    }
+    select {
+      padding: 8px 16px;
+      font-size: 1rem;
+      background: #fcf3e3;
+      border: 1px solid #e1c699;
+      border-radius: 6px;
+      width: 100%;
+      cursor: pointer;
+      outline-offset: 2px;
+      margin-bottom: 30px;
+    }
+    select:focus {
+      border-color: #e67e22;
+      outline: none;
+      box-shadow: 0 0 6px #e67e22aa;
+    }
+    button {
+      background: #e67e22;
+      color: white;
+      border: none;
+      padding: 13px 38px;
+      border-radius: 22px;
+      font-size: 1rem;
+      cursor: pointer;
+      letter-spacing: 1.5px;
+      font-weight: bold;
+      width: 100%;
+      transition: background 0.3s ease;
+    }
+    button:disabled {
+      background: #f9dfa9;
+      color: #bcbcbc;
+      cursor: not-allowed;
+    }
+    button:not(:disabled):hover {
+      background: #ef8f3c;
+    }
+    .quiz-section {
+      display: none;
+      text-align: center;
+    }
+    .quiz-section.active {
+      display: block;
+    }
+    .progress {
+      margin: 10px 0 26px;
+      color: #555;
+      font-size: 0.95rem;
+    }
+    .question {
+      font-weight: 600;
+      font-size: 1.15rem;
+      margin-bottom: 22px;
+      color: #1a1a1a;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 18px;
+      max-width: 100%;
+    }
+    .options button {
+      background: #eecda3;
+      border: none;
+      border-radius: 6px;
+      padding: 14px 0;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s, color 0.3s;
+      font-weight: 500;
+      max-width: 100%;
+    }
+    .options button.correct {
+      background: #7dcc7d !important;
+      color: #fff;
+      cursor: default;
+    }
+    .options button.wrong {
+      background: #e57373 !important;
+      color: #fff;
+      cursor: default;
+    }
+    .options button:hover:not(.correct):not(.wrong) {
+      background: #ef629f;
+      color: #fff;
+    }
+    .next-btn {
+      margin-top: 8px;
+    }
+    .result-score {
+      font-size: 1.3rem;
+      margin: 28px 0 0 0;
+      color: #ef629f;
+      font-weight: 600;
+    }
+    .encouragement {
+      font-size: 1.5rem;
+      margin-top: 8px;
+      color: #ff7b00;
+    }
+    @media (max-width: 500px) {
+      .container {
+        padding: 20px 8px;
+      }
+      h1 {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="introScreen">
+    <h1>Welcome to Indian Culture Quiz</h1>
+    <p>Test your knowledge about India's rich heritage, festivals, famous places, and arts.</p>
+    <label for="ageGroupSelect">Select Your Age Group:</label>
+    <select id="ageGroupSelect" aria-label="Select your age group">
+      <option value="" selected disabled>Choose age group</option>
+      <option value="kids">Kids (below 15)</option>
+      <option value="teens">Teens (15-19)</option>
+      <option value="adults">Adults (20+)</option>
+    </select>
+    <button id="startButton" disabled>Start Quiz</button>
+  </div>
+
+  <div class="container quiz-section" id="quizSection">
+    <div class="progress" id="progress"></div>
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+    <button class="next-btn" id="nextButton" disabled>Next</button>
+    <div class="result-score" id="result" style="display:none;"></div>
+    <div class="encouragement" id="encouragement" style="display:none;"></div>
+  </div>
+
+<script>
+  const introScreen = document.getElementById('introScreen');
+const quizSection = document.getElementById('quizSection');
+const ageGroupSelect = document.getElementById('ageGroupSelect');
+const startButton = document.getElementById('startButton');
+const progress = document.getElementById('progress');
+const questionBox = document.getElementById('question');
+const optionsBox = document.getElementById('options');
+const nextButton = document.getElementById('nextButton');
+const resultBox = document.getElementById('result');
+const encouragementBox = document.getElementById('encouragement');
+
+let selectedAge = "";
+let current = 0;
+let score = 0;
+let questions = [];
+
+async function fetchQuizQuestions(selectedAge) {
+  const response = await fetch("http://localhost:4000/quiz", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ ageGroup: selectedAge })
+  });
+  const data = await response.json();
+  // Defensive in case backend fails
+  if (!data.questions || !Array.isArray(data.questions)) {
+    alert("Quiz generation failed. Please try again later.");
+    location.reload();
+    return [];
+  }
+  return data.questions;
+}
+
+ageGroupSelect.addEventListener('change', () => {
+  startButton.disabled = (ageGroupSelect.value === "");
+});
+
+startButton.addEventListener('click', async () => {
+  selectedAge = ageGroupSelect.value;
+  current = 0;
+  score = 0;
+  resultBox.style.display = "none";
+  encouragementBox.style.display = "none";
+  introScreen.style.display = "none";
+  quizSection.style.display = "block";
+  nextButton.disabled = true;
+  
+  // Fetch questions from backend
+  questions = await fetchQuizQuestions(selectedAge);
+  if (questions.length === 0) return; // Fetch failed
+  
+  showQuestion();
+});
+
+function showQuestion() {
+  if (current >= questions.length) {
+    showResult();
+    return;
+  }
+  progress.textContent = `Question ${current + 1} of ${questions.length}`;
+  questionBox.textContent = questions[current].q;
+  optionsBox.innerHTML = '';
+  questions[current].options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.textContent = opt;
+    btn.onclick = () => selectOption(btn, idx);
+    optionsBox.appendChild(btn);
+  });
+  nextButton.disabled = true;
+  nextButton.style.display = "inline-block";
+  nextButton.textContent = (current < questions.length - 1) ? "Next" : "Finish";
+}
+
+function selectOption(btn, idx) {
+  [...optionsBox.children].forEach(b => b.disabled = true);
+  if (idx === questions[current].answer) {
+    btn.classList.add('correct');
+    score++;
+  } else {
+    btn.classList.add('wrong');
+    optionsBox.children[questions[current].answer].classList.add('correct');
+  }
+  nextButton.disabled = false;
+}
+
+nextButton.addEventListener('click', () => {
+  current++;
+  showQuestion();
+});
+
+function showResult() {
+  questionBox.textContent = '';
+  optionsBox.innerHTML = '';
+  progress.textContent = '';
+  resultBox.style.display = "block";
+  encouragementBox.style.display = "block";
+  resultBox.textContent = `You scored ${score} out of ${questions.length}!`;
+  nextButton.disabled = true;
+  nextButton.style.display = 'none';
+
+  if(score === questions.length) {
+    encouragementBox.textContent = "🎉 Fantastic! You got a perfect score! 👏👏👏";
+  } else if(score >= questions.length / 2) {
+    encouragementBox.textContent = "👍 Great job! Keep learning! 👏";
+  } else {
+    encouragementBox.textContent = "😊 Keep trying – you’re getting there!";
+  }
+}
+
+quizSection.style.display = "none";
+
+</script>
+
+</body>
+</html>

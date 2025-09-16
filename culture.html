@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Interactive Art Forms Experience</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      background: #f9f8f6;
+      margin: 0;
+      padding: 0;
+      font-family: 'Georgia', serif;
+    }
+    a.card {
+      color: inherit;
+      text-decoration: none;
+      display: block;
+    }
+    .container {
+      max-width: 900px;
+      margin: 40px auto 0 auto;
+      background: #fff7ee;
+      padding: 36px 32px;
+      border-radius: 18px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+    }
+    .header-search {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      gap: 10px;
+    }
+    .header-search h1 {
+      flex: 1 1 auto;
+      margin: 0;
+    }
+    #searchInput {
+      flex: 0 0 250px;
+      padding: 8px 12px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-family: 'Georgia', serif;
+    }
+    .subtitle {
+      font-size: 1rem;
+      color: #6d5e50;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 28px;
+    }
+    .card {
+      background: #faf6f0;
+      border: 1px solid #f5e9dd;
+      border-radius: 15px;
+      padding: 32px 24px;
+      box-sizing: border-box;
+      transition: box-shadow 0.15s;
+      cursor: pointer;
+    }
+    .card:hover {
+      box-shadow: 0 5px 16px rgba(130, 84, 45, 0.08);
+      border-color: #eed6be;
+    }
+    .state {
+      font-size: 1.23rem;
+      font-weight: bold;
+      color: #332510;
+      margin-bottom: 10px;
+    }
+    .desc {
+      font-size: 1rem;
+      color: #6d5e50;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 16px 6px;
+      }
+      .card {
+        padding: 18px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-search">
+      <h1>Indian States</h1>
+      <input type="text" id="searchInput" placeholder="Search states..." onkeyup="filterStates()" />
+    </div>
+    <div class="subtitle">
+      This page presents the art forms and cultures of different states of India.
+    </div>
+    <div class="grid" id="statesGrid">
+      <a href="state1.html" class="card">
+        <div class="state">Andhra Pradesh</div>
+        <div class="desc">Major agricultural and industrial contributor to India’s economy.</div>
+      </a>
+      <a href="state2.html" class="card">
+        <div class="state">Arunachal Pradesh</div>
+        <div class="desc">Rich in biodiversity and crucial for ecological balance.</div>
+      </a>
+      <a href="state3.html" class="card">
+        <div class="state">Assam</div>
+        <div class="desc">Famous for tea, oil, and rich cultural heritage in Northeast India.</div>
+      </a>
+      <a href="state4.html" class="card">
+        <div class="state">Bihar</div>
+        <div class="desc">Known for historical sites and agricultural significance.</div>
+      </a>
+      <a href="state5.html" class="card">
+        <div class="state">Chhattisgarh</div>
+        <div class="desc">Important for mineral resources and steel production.</div>
+      </a>
+      <a href="state6.html" class="card">
+        <div class="state">Goa</div>
+        <div class="desc">Renowned for its beaches, tourism, and vibrant culture.</div>
+      </a>
+      <a href="state7.html" class="card">
+        <div class="state">Gujarat</div>
+        <div class="desc">Key industrial hub with rich business and cultural heritage.</div>
+      </a>
+      <a href="state8.html" class="card">
+        <div class="state">Haryana</div>
+        <div class="desc">Major contributor to agriculture and IT industries near Delhi.</div>
+      </a>
+      <a href="state9.html" class="card">
+        <div class="state">Himachal Pradesh</div>
+        <div class="desc">Tourism hotspot with scenic Himalayas and adventure sports.</div>
+      </a>
+      <a href="state10.html" class="card">
+        <div class="state">Jharkhand</div>
+        <div class="desc">Rich in minerals and industrial growth.</div>
+      </a>
+      <a href="state11.html" class="card">
+        <div class="state">Karnataka</div>
+        <div class="desc">IT powerhouse with rich cultural and historical heritage.</div>
+      </a>
+      <a href="state12.html" class="card">
+        <div class="state">Kerala</div>
+        <div class="desc">Known for high human development, tourism, and Ayurveda.</div>
+      </a>
+      <a href="state13.html" class="card">
+        <div class="state">Madhya Pradesh</div>
+        <div class="desc">Home to rich history, wildlife, and cultural landmarks.</div>
+      </a>
+      <a href="state14.html" class="card">
+        <div class="state">Maharashtra</div>
+        <div class="desc">Financial capital and entertainment hub of India.</div>
+      </a>
+      <a href="state15.html" class="card">
+        <div class="state">Manipur</div>
+        <div class="desc">Known for cultural richness and natural beauty.</div>
+      </a>
+      <a href="state16.html" class="card">
+        <div class="state">Meghalaya</div>
+        <div class="desc">Famous for natural landscapes like caves and waterfalls.</div>
+      </a>
+      <a href="state17.html" class="card">
+        <div class="state">Mizoram</div>
+        <div class="desc">Rich tribal culture and lush green hills.</div>
+      </a>
+      <a href="state18.html" class="card">
+        <div class="state">Nagaland</div>
+        <div class="desc">Diverse tribal culture and vibrant festivals.</div>
+      </a>
+      <a href="state19.html" class="card">
+        <div class="state">Odisha</div>
+        <div class="desc">Known for ancient temples, coastal economy, and culture.</div>
+      </a>
+      <a href="state20.html" class="card">
+        <div class="state">Punjab</div>
+        <div class="desc">Agricultural powerhouse with rich Sikh heritage.</div>
+      </a>
+      <a href="state21.html" class="card">
+        <div class="state">Rajasthan</div>
+        <div class="desc">Famous for deserts, forts, and cultural tourism.</div>
+      </a>
+      <a href="state22.html" class="card">
+        <div class="state">Sikkim</div>
+        <div class="desc">Eco-tourism destination with rich biodiversity.</div>
+      </a>
+      <a href="state23.html" class="card">
+        <div class="state">Tamil Nadu</div>
+        <div class="desc">Cultural center with temples and advanced industries.</div>
+      </a>
+      <a href="state24.html" class="card">
+        <div class="state">Telangana</div>
+        <div class="desc">Growing IT and industrial hub with historical roots.</div>
+      </a>
+      <a href="state25.html" class="card">
+        <div class="state">Tripura</div>
+        <div class="desc">Rich in tribal culture and natural beauty.</div>
+      </a>
+      <a href="state26.html" class="card">
+        <div class="state">Uttar Pradesh</div>
+        <div class="desc">Cultural and historical heartland of India.</div>
+      </a>
+      <a href="state27.html" class="card">
+        <div class="state">Uttarakhand</div>
+        <div class="desc">Himalayan state known for pilgrimage and nature.</div>
+      </a>
+      <a href="state28.html" class="card">
+        <div class="state">West Bengal</div>
+        <div class="desc">Cultural richness with vibrant arts and commerce.</div>
+      </a>
+      <a href="state29.html" class="card">
+        <div class="state">Jammu & Kashmir</div>
+        <div class="desc">Scenic beauty with rich cultural heritage.</div>
+      </a>
+    </div>
+  </div>
+
+<script>
+  function filterStates() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase();
+    const grid = document.getElementById('statesGrid');
+    const cards = grid.getElementsByClassName('card');
+
+    for (let card of cards) {
+      const stateName = card.querySelector('.state').textContent.toLowerCase();
+      if (stateName.includes(filter)) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    }
+  }
+</script>
+</body>
+</html>

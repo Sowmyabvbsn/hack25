@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Assam - Art Forms & Crafts</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background: #f9f8f6;
+      margin: 20px;
+      padding: 0;
+      color: #332510;
+    }
+    .container {
+      max-width: 960px;
+      margin: auto;
+      background: #fff7ee;
+      padding: 20px 15px;
+      border-radius: 18px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.3rem;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+    .scrolling-row {
+      display: flex;
+      overflow-x: auto;
+      gap: 20px;
+      padding-bottom: 12px;
+      scroll-behavior: smooth;
+    }
+    .scrolling-row::-webkit-scrollbar {
+      height: 8px;
+    }
+    .scrolling-row::-webkit-scrollbar-thumb {
+      background: #836163;
+      border-radius: 4px;
+    }
+    .item {
+      position: relative;
+      flex: 0 0 auto;
+      width: 220px;
+      border: 1px solid #f5e9dd;
+      border-radius: 15px;
+      background: #faf6f0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      cursor: pointer;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .item img {
+      width: 100%;
+      height: 350px;
+      border-radius: 15px 15px 0 0;
+      display: block;
+      transition: filter 0.3s ease;
+    }
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 15px 15px 0 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      opacity: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+      text-align: center;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      font-size: 1rem;
+      line-height: 1.4;
+      font-weight: bold;
+      z-index: 1;
+    }
+    .item:hover img {
+      filter: blur(2px);
+    }
+    .item:hover .overlay {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .overlay h2 {
+      margin: 0 0 10px 0;
+      font-size: 1.2rem;
+    }
+    .title-below {
+      margin-top: 8px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: #332510;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Assam - Famous Art Forms & Crafts</h1>
+    <div class="scrolling-row">
+      <div class="item">
+        <img src="images/as1.jpg" alt="Kuchipudi Dance" />
+        <div class="overlay">
+          <h2>Bihu dance</h2>
+          <p>a vibrant and energetic folk dance celebrated during the Bihu festivals, symbolizing the arrival of spring</p>
+        </div>
+        <div class="title-below">Bihu dance</div>
+      </div>
+      <div class="item">
+        <img src="images/as2.jpg" alt="Ekatpalli Dolls" />
+        <div class="overlay">
+          <h2>Muga silk weaving</h2>
+          <p>Muga silk weaving is an ancient craft of Assam, producing a natural golden silk renowned for its durability, shimmering texture, and cultural significance, traditionally worn during important ceremonies and festivals.</p>
+        </div>
+        <div class="title-below">Ekatpalli Dolls</div>
+      </div>
+      <div class="item">
+        <img src="images/as3.jpg" alt="Kondapalli Toys" />
+        <div class="overlay">
+          <h2>Jhumur dance</h2>
+          <p>Jamur dance is a vibrant folk dance performed by the tea tribe communities of Assam, showcasing rhythmic movements and traditional songs celebrating their cultural identity.</p>
+        <div class="title-below"> Jhumur dance</div>
+      </div>
+  </div>
+  <div class="container">
+  <a href="culture.html" style="display: inline-block; margin-bottom: 20px; font-weight: bold; color: #336699; text-decoration: none;">
+    &larr; Back to Dashboard
+  </a>
+</div>
+
+</body>
+</html>

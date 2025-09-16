@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Andhra Pradesh Districts Map</title>
+  <style>
+    svg path {
+      fill: #cccccc;
+      stroke: black;
+      stroke-width: 1;
+      cursor: pointer;
+      transition: fill 0.3s;
+    }
+    svg path:hover {
+      fill: orange;
+    }
+    svg path.active {
+      fill: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Andhra Pradesh Districts</h1>
+
+  <!-- Embed SVG from file -->
+  <object id="apMap" data="ap_dist.svg" type="image/svg+xml" width="700" height="700"></object>
+
+  <script>
+    // Interactivity when using <object>
+    const objectEl = document.getElementById('apMap');
+    objectEl.addEventListener('load', () => {
+      const svgDoc = objectEl.contentDocument;
+      const districts = svgDoc.querySelectorAll('path, polygon');
+      districts.forEach(district => {
+        district.addEventListener('click', () => {
+          districts.forEach(d => d.classList.remove('active'));
+          district.classList.add('active');
+          alert('Clicked on ' + district.id);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

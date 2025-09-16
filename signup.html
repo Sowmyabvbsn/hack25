@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SignUp</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url("https://th.bing.com/th/id/OIP.k_OA74KiDCn_FP-vjnTtSQHaHa?w=182&h=182&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3");
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 320px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .form-container:hover {
+            transform: scale(1.02);
+        }
+
+        .form-container h2 {
+            color: #ffffff;
+            margin-bottom: 30px;
+            font-size: 32px;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .form-container input[type="text"],
+        .form-container input[type="number"],
+        .form-container input[type="tel"],
+        .form-container input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 6px;
+            background-color: rgba(255, 255, 255, 0.8);
+            transition: background-color 0.3s ease;
+        }
+
+        .form-container input:focus {
+            background-color: #e0e0ff;
+            outline: none;
+        }
+
+        .form-container input[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background-color: rgb(111, 111, 217);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-container input[type="submit"]:hover {
+            background-color: rgb(85, 85, 190);
+        }
+
+        .form-container .Signup {
+            margin-top: 20px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .form-container .Signup a {
+            color: #fc0839;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .form-container .Signup a:hover {
+            color: #f79d9d;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Signup</h2>
+        <form action="#" method="post">
+            <input type="text" name="username" placeholder="Enter your username" required>
+            <input type="number" name="age" placeholder="Enter your age" required>
+            <input type="tel" name="phone" placeholder="Enter your phone number" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="password" name="confirm_password" placeholder="Confirm password" required>
+            <input type="submit" value="Sign Up">
+        </form>
+        <div class="Signup">
+            Already have an account? <a href="#">Login here</a>
+        </div>
+    </div>
+</body>
+</html>
