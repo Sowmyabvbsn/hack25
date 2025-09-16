@@ -11,6 +11,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Add a health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', message: 'Quiz backend is running' });
+});
+
 app.post('/quiz', async (req, res) => {
   const { ageGroup } = req.body;
 
@@ -28,6 +33,7 @@ app.post('/quiz', async (req, res) => {
       model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.7,
+      timeout: 30000, // 30 second timeout
     });
 
     const content = completion.choices[0].message.content.trim();
@@ -48,7 +54,18 @@ app.post('/quiz', async (req, res) => {
     res.json({ questions });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Quiz generation failed" });
+    
+    // Handle different types of errors
+    if (error.code === 'ENOTFOUND' || error.message.includes('timeout')) {
+      res.status(503).json({ 
+        error: "OpenAI service temporarily unavailable. Please try again later.",
+        fallback: true 
+      });
+    } else if (error.status === 401) {
+      res.status(401).json({ error: "Invalid OpenAI API key" });
+    } else {
+      res.status(500).json({ error: "Quiz generation failed. Please try again." });
+    }
   }
 });
 

@@ -196,16 +196,113 @@ let current = 0;
 let score = 0;
 let questions = [];
 
+// Fallback questions for when OpenAI is unavailable
+const fallbackQuestions = {
+  kids: [
+    {
+      q: "What is the national bird of India?",
+      options: ["Peacock", "Eagle", "Parrot", "Crow"],
+      answer: 0
+    },
+    {
+      q: "Which festival is known as the Festival of Lights?",
+      options: ["Holi", "Diwali", "Eid", "Christmas"],
+      answer: 1
+    },
+    {
+      q: "What is the capital of India?",
+      options: ["Mumbai", "Chennai", "New Delhi", "Kolkata"],
+      answer: 2
+    },
+    {
+      q: "Which monument is known as a symbol of love?",
+      options: ["Red Fort", "Taj Mahal", "India Gate", "Qutub Minar"],
+      answer: 1
+    },
+    {
+      q: "What is the national flower of India?",
+      options: ["Rose", "Jasmine", "Lotus", "Sunflower"],
+      answer: 2
+    }
+  ],
+  teens: [
+    {
+      q: "Who wrote the Indian national anthem 'Jana Gana Mana'?",
+      options: ["Mahatma Gandhi", "Rabindranath Tagore", "Subhas Chandra Bose", "Jawaharlal Nehru"],
+      answer: 1
+    },
+    {
+      q: "Which classical dance form originated in Tamil Nadu?",
+      options: ["Kathak", "Bharatanatyam", "Odissi", "Manipuri"],
+      answer: 1
+    },
+    {
+      q: "The ancient university of Nalanda was located in which state?",
+      options: ["Uttar Pradesh", "West Bengal", "Bihar", "Odisha"],
+      answer: 2
+    },
+    {
+      q: "Which Mughal emperor built the Taj Mahal?",
+      options: ["Akbar", "Shah Jahan", "Aurangzeb", "Humayun"],
+      answer: 1
+    },
+    {
+      q: "What is the traditional art of henna painting called?",
+      options: ["Rangoli", "Mehendi", "Warli", "Madhubani"],
+      answer: 1
+    }
+  ],
+  adults: [
+    {
+      q: "Which Indus Valley Civilization site is located in Gujarat?",
+      options: ["Harappa", "Mohenjo-daro", "Dholavira", "Kalibangan"],
+      answer: 2
+    },
+    {
+      q: "The Ajanta and Ellora caves are located in which state?",
+      options: ["Madhya Pradesh", "Maharashtra", "Karnataka", "Rajasthan"],
+      answer: 1
+    },
+    {
+      q: "Which raga is traditionally performed in the early morning?",
+      options: ["Yaman", "Bhairav", "Malkauns", "Darbari"],
+      answer: 1
+    },
+    {
+      q: "The Konark Sun Temple was built during which dynasty?",
+      options: ["Chola", "Pallava", "Eastern Ganga", "Hoysala"],
+      answer: 2
+    },
+    {
+      q: "Which ancient text contains the principles of Indian architecture?",
+      options: ["Arthashastra", "Natya Shastra", "Vastu Shastra", "Dharma Shastra"],
+      answer: 2
+    }
+  ]
+};
+
 async function fetchQuizQuestions(selectedAge) {
   try {
+    // First check if backend is running
+    const healthResponse = await fetch("http://localhost:4000/health");
+    if (!healthResponse.ok) {
+      throw new Error("Backend server not responding");
+    }
+    
     const response = await fetch("http://localhost:4000/quiz", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ ageGroup: selectedAge })
+      body: JSON.stringify({ ageGroup: selectedAge }),
+      timeout: 35000 // 35 second timeout
     });
     
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      if (errorData.fallback) {
+        console.log("Using fallback questions due to OpenAI service issues");
+        return fallbackQuestions[selectedAge] || fallbackQuestions.kids;
+      }
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
     }
     
     const data = await response.json();
@@ -218,9 +315,11 @@ async function fetchQuizQuestions(selectedAge) {
     return data.questions;
   } catch (error) {
     console.error('Error fetching quiz questions:', error);
-    alert("Quiz generation failed. Please check if the backend server is running and try again.");
-    location.reload();
-    return [];
+    
+    // Use fallback questions instead of failing completely
+    console.log("Using fallback questions due to connection issues");
+    alert("Using offline questions due to connection issues. Quiz will still work!");
+    return fallbackQuestions[selectedAge] || fallbackQuestions.kids;
   }
 }
 
