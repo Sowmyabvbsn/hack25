@@ -30,7 +30,7 @@ app.post('/quiz', async (req, res) => {
       temperature: 0.7,
     });
 
-    const content = completion.choices.message.content.trim();
+    const content = completion.choices[0].message.content.trim();
 
     let questions = null;
     try {
