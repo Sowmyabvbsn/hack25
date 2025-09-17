@@ -66,4 +66,7 @@ tryOnButton.addEventListener('click', async () => {
         }
     }
 });
+<<<<<<< HEAD
+=======
 
+>>>>>>> 0ba8332e2894d56f108c24184a5fa7666b675ed0
