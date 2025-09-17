@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Indian Heritage Products - Enhanced UI</title>
+  <style>
+    /* Base styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0 20px;
+      background: #fefefe;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(90deg, #b83232, #7a1f1f);
+      color: #fff;
+      padding: 1.5rem 20px;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      border-radius: 0 0 12px 12px;
+      width: 100%;
+      max-width: 960px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 15px rgba(183, 50, 50, 0.5);
+    }
+    /* State buttons container */
+    .state-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 2rem;
+      justify-content: center;
+      max-width: 960px;
+      width: 100%;
+      margin-bottom: 3rem;
+    }
+    /* Individual state button style */
+    .state-buttons button {
+      background-color: #b83232;
+      color: white;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 2rem;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 4px 6px rgba(183, 50, 50, 0.4);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      font-size: 1.05rem;
+      flex-grow: 1;
+      min-width: 160px;
+      max-width: 220px;
+      text-align: center;
+    }
+    .state-buttons button:hover, .state-buttons button:focus {
+      background-color: #7a1f1f;
+      outline: none;
+      transform: scale(1.05);
+      box-shadow: 0 6px 8px rgba(183, 50, 50, 0.7);
+    }
+    /* Containers for products and details */
+    .product-list, .product-detail {
+      max-width: 720px;
+      width: 100%;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      padding: 1.5rem 2rem;
+      margin-bottom: 3rem;
+      transition: opacity 0.35s ease;
+    }
+    /* Product list styles */
+    .product-list h2 {
+      color: #b83232;
+      font-weight: 700;
+      border-bottom: 2px solid #b83232;
+      padding-bottom: 6px;
+      margin-bottom: 1rem;
+    }
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .product-list li {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 1.15rem;
+      cursor: pointer;
+      transition: color 0.3s ease, font-weight 0.3s ease;
+      border-radius: 6px;
+      user-select: none;
+    }
+    .product-list li:hover, .product-list li:focus {
+      color: #b83232;
+      font-weight: 700;
+      background-color: #fde6e6;
+      outline: none;
+    }
+    /* Product detail styles */
+    .product-detail h2 {
+      color: #b83232;
+      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .product-detail p {
+      font-size: 1.1rem;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      color: #444;
+    }
+    .product-detail img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .product-detail a {
+      display: block;
+      width: fit-content;
+      margin: 1rem auto 0 auto;
+      padding: 0.7rem 2.5rem;
+      background-color: #b83232;
+      color: white;
+      font-weight: 700;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1.1rem;
+      box-shadow: 0 5px 10px rgba(183, 50, 50, 0.6);
+      transition: background-color 0.3s ease;
+    }
+    .product-detail a:hover, .product-detail a:focus {
+      background-color: #7a1f1f;
+      outline: none;
+    }
+    /* Back buttons */
+    .back-button {
+      display: inline-block;
+      margin: 2rem auto 0;
+      background-color: #777;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      font-size: 1rem;
+      user-select: none;
+      display: block;
+      text-align: center;
+    }
+    .back-button:hover, .back-button:focus {
+      background-color: #444;
+      outline: none;
+      transform: scale(1.03);
+    }
+    /* Responsive adjustments */
+    @media (max-width: 720px) {
+      .state-buttons {
+        gap: 0.75rem 1rem;
+      }
+      .state-buttons button {
+        min-width: 140px;
+        font-size: 1rem;
+      }
+      .product-list, .product-detail {
+        padding: 1.2rem 1.5rem;
+      }
+    }
+    @media (max-width: 480px) {
+      header {
+        font-size: 1.5rem;
+        padding: 1rem 15px;
+      }
+      .state-buttons {
+        justify-content: center;
+        gap: 0.6rem 0.8rem;
+      }
+      .state-buttons button {
+        min-width: 120px;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.95rem;
+      }
+      .product-list h2, .product-detail h2 {
+        font-size: 1.6rem;
+      }
+      .product-detail p {
+        font-size: 1rem;
+      }
+      .back-button {
+        font-size: 0.9rem;
+        padding: 0.45rem 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>Indian Heritage Products - Ecommerce Demo</header>
+
+<div class="state-buttons" id="stateButtons"></div>
+
+<div class="product-list" id="productList" style="display:none;" tabindex="0" aria-label="Product list">
+  <h2 id="productListTitle"></h2>
+  <ul id="productsUl"></ul>
+  <button class="back-button" onclick="hideProductList()">Back to States</button>
+</div>
+
+<div class="product-detail" id="productDetail" style="display:none;" tabindex="0" aria-label="Product details">
+  <h2 id="productName"></h2>
+  <p id="productDescription"></p>
+  <img id="productImage" src="" alt="Product Image" />
+  <a href="#" id="productLink" target="_blank" rel="noopener noreferrer">Buy Now</a>
+  <button class="back-button" onclick="hideProductDetail()">Back to Products</button>
+</div>
+
+<script>
+  // Data: States with their products and details
+  const data = {
+    "Andhra Pradesh": [
+      {
+        name: "Pochampally Sarees",
+        description: "Traditional saree with geometric ikat designs from Telangana.",
+        image: "https://itokri.com/cdn/shop/products/Pochampally_ikat_dhoti_-_Blue_eps_e3b2bd49-7cfc-4e6a-8d68-5acea7973b44_600x600.jpg?v=1677410242",
+        link: "https://itokri.com/collections/pochampally-sarees"
+      },
+      {
+        name: "Kalamkari Art",
+        description: "Hand-painted cotton textile with natural dyes showcasing traditional motifs.",
+        image: "https://metalkart.in/cdn/shop/products/kalamkari-final-main_6a26da36-0a58-4c50-8f0e-f76b17e9d402_600x.jpg",
+        link: "https://metalkart.in/pages/discover-the-exquisite-beauty-of-kalamkari-paintings"
+      },
+      {
+        name: "Etikoppaka Toys",
+        description: "Handcrafted wooden toys painted with natural dyes from Etikoppaka village.",
+        image: "https://cdn.shopify.com/s/files/1/0072/3111/3887/products/etikoppaka_toy_3_1024x1024.jpg?v=1674663192",
+        link: "https://itokri.com/collections/etikoppaka-toys"
+      },
+      {
+        name: "Lacquerware",
+        description: "Traditional craft involving coating wood or bamboo with lacquer paints.",
+        image: "https://upload.wikimedia.org/wikipedia/commons/5/5d/Lacquerware_bowl_-India-_Walters_48233.jpg",
+        link: "https://en.wikipedia.org/wiki/Lacquerware"
+      }
+    ],
+    "Goa": [
+      {
+        name: "Cashew Crafts",
+        description: "Crafts made using cashew shells and nuts from Goa.",
+        image: "https://cdn.shopify.com/s/files/1/1416/8662/products/cashew_nut_shell_craft.jpg",
+        link: "#"
+      },
+      {
+        name: "Azulejo Tiles",
+        description: "Decorative ceramic tiles crafted with Portuguese influence.",
+        image: "https://cdn.shopify.com/s/files/1/0012/4557/0628/products/azulejo_tile.jpg",
+        link: "#"
+      },
+      {
+        name: "Cane Furniture",
+        description: "Eco-friendly cane furniture handcrafted by Goan artisans.",
+        image: "https://cdn.shopify.com/s/files/1/0078/5318/8126/products/cane-furniture-set_600x.jpg",
+        link: "#"
+      },
+      {
+        name: "Sea Shell Crafts",
+        description: "Art and decorative items made from sea shells found on Goan beaches.",
+        image: "https://cdn.shopify.com/s/files/1/0660/4350/products/shell-crafts.jpg",
+        link: "#"
+      }
+    ],
+    // Add more states and products similarly...
+  };
+
+  // Elements references
+  const stateButtonsDiv = document.getElementById('stateButtons');
+  const productListDiv = document.getElementById('productList');
+  const productsUl = document.getElementById('productsUl');
+  const productListTitle = document.getElementById('productListTitle');
+  const productDetailDiv = document.getElementById('productDetail');
+  const productNameEl = document.getElementById('productName');
+  const productDescriptionEl = document.getElementById('productDescription');
+  const productImageEl = document.getElementById('productImage');
+  const productLinkEl = document.getElementById('productLink');
+
+  // Create state buttons on load
+  function createStateButtons() {
+    Object.keys(data).forEach(state => {
+      const btn = document.createElement('button');
+      btn.textContent = state;
+      btn.addEventListener('click', () => showProducts(state));
+      stateButtonsDiv.appendChild(btn);
+    });
+  }
+
+  // Show product list for selected state
+  function showProducts(state) {
+    stateButtonsDiv.style.display = 'none';
+    productsUl.innerHTML = '';
+    productListTitle.textContent = `${state} Products`;
+    data[state].forEach(product => {
+      const li = document.createElement('li');
+      li.textContent = product.name;
+      li.tabIndex = 0;
+      li.setAttribute('role', 'button');
+      li.addEventListener('click', () => showProductDetail(state, product.name));
+      li.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          showProductDetail(state, product.name);
+        }
+      });
+      productsUl.appendChild(li);
+    });
+    productListDiv.style.display = 'block';
+    productDetailDiv.style.display = 'none';
+    productListDiv.focus();
+  }
+
+  // Hide product list, show state buttons
+  function hideProductList() {
+    productListDiv.style.display = 'none';
+    stateButtonsDiv.style.display = 'flex';
+    stateButtonsDiv.focus();
+  }
+
+  // Show product detail
+  function showProductDetail(state, productName) {
+    const product = data[state].find(p => p.name === productName);
+    if (!product) return;
+    productNameEl.textContent = product.name;
+    productDescriptionEl.textContent = product.description;
+    productImageEl.src = product.image;
+    productImageEl.alt = `Image of ${product.name}`;
+    productLinkEl.href = product.link;
+    productListDiv.style.display = 'none';
+    productDetailDiv.style.display = 'block';
+    productDetailDiv.focus();
+  }
+
+  // Hide product detail, show product list
+  function hideProductDetail() {
+    productDetailDiv.style.display = 'none';
+    productListDiv.style.display = 'block';
+    productListDiv.focus();
+  }
+
+  // Initialize app by creating state buttons
+  createStateButtons();
+</script>
+
+</body>
+</html>
