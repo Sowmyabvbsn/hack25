@@ -5,7 +5,7 @@ const tryOnButton = document.getElementById('tryOnButton');
 
 let uploadedImage = new Image();
 let dressImage = new Image(); // dress overlay image
-dressImage.src = 'dress.png'; // your dress image path
+dressImage.src = 'image.png'; // your dress image path
 
 // Load dress image
 dressImage.onload = () => {
