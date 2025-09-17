@@ -52,6 +52,9 @@ const server = http.createServer((req, res) => {
   if (pathname === '/ecom') {
     pathname = '/ecom.html';
   }
+  if (pathname === '/index') {
+    pathname = '/index.html';
+  }
   
   const filePath = path.join(__dirname, pathname.substring(1));
   fs.access(filePath, fs.constants.F_OK, (err) => {

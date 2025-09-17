@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Virtual Dress Try-On</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <h1>Virtual Dress Try-On</h1>
+    <input type="file" id="uploadImage" accept="image/*" />
+    <br><br>
+    <canvas id="canvas"></canvas>
+    <br>
+    <button id="tryOnButton">Try Dress</button>
+
+    <script src="app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.9.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix"></script>
+</body>
+</html>
