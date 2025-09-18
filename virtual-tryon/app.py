@@ -1,7 +1,4 @@
-"""Virtual Try-On with Gradio and Vertex AI."""
-# ruff: noqa: E501
-
-# %% IMPORTS
+"""Virtual Try-On with Gradio and Google AI."""
 
 import io
 import logging
@@ -11,21 +8,22 @@ from typing import List, Optional
 import gradio as gr
 from PIL import Image
 import google.generativeai as genai
-from google.cloud import aiplatform
 import base64
 
 # Load environment variables
-from dotenv import load_dotenv
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    print("python-dotenv not installed, using system environment variables")
 
 # %% ENVIRONS
 
 GOOGLE_CLOUD_LOCATION = os.environ.get("GOOGLE_CLOUD_LOCATION", "us-central1")
 GOOGLE_CLOUD_PROJECT = os.environ.get("GOOGLE_CLOUD_PROJECT", "your-project-id")
-GOOGLE_GENAI_USE_VERTEXAI = os.environ.get("GOOGLE_GENAI_USE_VERTEXAI", "true").lower() == "true"
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", "")
 
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "INFO")
-VIRTUAL_TRY_ON_MODEL = os.environ.get("VIRTUAL_TRY_ON_MODEL", "imagen-3.0-generate-001")
 
 # %% CONFIGS
 
@@ -38,6 +36,8 @@ DESCRIPTION = """
 Upload your photo and select traditional Indian clothing to see how you'd look! Our AI-powered virtual try-on technology brings India's rich textile heritage to life.
 
 **Supported Items:** Traditional tops (kurtas, blouses, sarees), bottoms (dhoti, lehenga, salwar), and footwear (mojari, kolhapuri chappals).
+
+*Note: This is a demo version using image composition. For best results, use clear photos with good lighting.*
 """
 FOOTER = (
     "<center>"
@@ -48,17 +48,16 @@ FOOTER = (
 
 # %% CLIENTS
 
+client_initialized = False
 try:
-    # Initialize Vertex AI
-    if GOOGLE_GENAI_USE_VERTEXAI:
-        aiplatform.init(project=GOOGLE_CLOUD_PROJECT, location=GOOGLE_CLOUD_LOCATION)
-    
-    # Configure GenAI
-    genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
-    client_initialized = True
+    if GOOGLE_API_KEY:
+        genai.configure(api_key=GOOGLE_API_KEY)
+        client_initialized = True
+        print("Google AI client initialized successfully")
+    else:
+        print("Warning: GOOGLE_API_KEY not found in environment variables")
 except Exception as e:
     print(f"Warning: Could not initialize Google AI client: {e}")
-    client_initialized = False
 
 # %% LOGGING
 
@@ -73,59 +72,82 @@ def image_to_base64(image: Image.Image) -> str:
     image.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode()
 
+def create_simple_overlay(person_image: Image.Image, product_image: Image.Image) -> Image.Image:
+    """Create a simple overlay effect for virtual try-on."""
+    # Convert to RGBA for transparency support
+    person_rgba = person_image.convert('RGBA')
+    product_rgba = product_image.convert('RGBA')
+    
+    # Resize product image to fit appropriately on person
+    person_width, person_height = person_rgba.size
+    
+    # Scale product image to be about 1/3 the size of person image
+    scale_factor = min(person_width // 3, person_height // 3) / max(product_rgba.size)
+    new_size = (int(product_rgba.width * scale_factor), int(product_rgba.height * scale_factor))
+    product_resized = product_rgba.resize(new_size, Image.Resampling.LANCZOS)
+    
+    # Position the product image (center-top area for clothing)
+    overlay_x = (person_width - product_resized.width) // 2
+    overlay_y = person_height // 4
+    
+    # Create result image
+    result = person_rgba.copy()
+    
+    # Paste product with some transparency
+    product_with_alpha = product_resized.copy()
+    # Make it semi-transparent
+    alpha = product_with_alpha.split()[-1]
+    alpha = alpha.point(lambda p: int(p * 0.8))  # 80% opacity
+    product_with_alpha.putalpha(alpha)
+    
+    # Paste onto result
+    result.paste(product_with_alpha, (overlay_x, overlay_y), product_with_alpha)
+    
+    return result.convert('RGB')
+
 def generate_try_on_images(
     person_image: Optional[Image.Image],
     product_image: Optional[Image.Image],
     base_steps: int = 32,
     image_count: int = 1,
 ) -> List[Image.Image]:
-    """Generates images using AI for virtual try-on."""
+    """Generates images using simple image composition for virtual try-on."""
     
     if not person_image:
         raise gr.Error("Please upload a person image.", title="Missing Person Image")
     if not product_image:
         raise gr.Error("Please upload a product image.", title="Missing Product Input")
     
-    if not client_initialized:
-        raise gr.Error("Google AI client not initialized. Please check your credentials.", title="Configuration Error")
-    
     try:
-        # For now, we'll use a simple image composition approach
-        # This is a fallback implementation until Vertex AI Virtual Try-On is properly configured
-        
-        # Resize images to similar dimensions
-        person_width, person_height = person_image.size
-        product_image = product_image.resize((person_width // 3, person_height // 3))
-        
-        # Create a simple overlay effect
-        result_image = person_image.copy()
-        
-        # Position the product image (this is a basic implementation)
-        overlay_x = person_width // 4
-        overlay_y = person_height // 4
-        
-        # Create a semi-transparent overlay
-        overlay = Image.new('RGBA', result_image.size, (0, 0, 0, 0))
-        overlay.paste(product_image, (overlay_x, overlay_y))
-        
-        # Blend the images
-        result_image = Image.alpha_composite(result_image.convert('RGBA'), overlay)
-        result_image = result_image.convert('RGB')
-        
-        # Generate multiple variations by slightly adjusting the overlay position
         images = []
+        
         for i in range(image_count):
             if i == 0:
+                # Main result
+                result_image = create_simple_overlay(person_image, product_image)
                 images.append(result_image)
             else:
-                # Create slight variations
-                variant = person_image.copy()
-                variant_overlay = Image.new('RGBA', variant.size, (0, 0, 0, 0))
-                offset_x = overlay_x + (i * 10)
-                offset_y = overlay_y + (i * 5)
-                variant_overlay.paste(product_image, (offset_x, offset_y))
-                variant = Image.alpha_composite(variant.convert('RGBA'), variant_overlay)
-                images.append(variant.convert('RGB'))
+                # Create variations by adjusting position slightly
+                person_rgba = person_image.convert('RGBA')
+                product_rgba = product_image.convert('RGBA')
+                
+                person_width, person_height = person_rgba.size
+                scale_factor = min(person_width // 3, person_height // 3) / max(product_rgba.size)
+                new_size = (int(product_rgba.width * scale_factor), int(product_rgba.height * scale_factor))
+                product_resized = product_rgba.resize(new_size, Image.Resampling.LANCZOS)
+                
+                # Vary position slightly
+                overlay_x = (person_width - product_resized.width) // 2 + (i * 10)
+                overlay_y = person_height // 4 + (i * 5)
+                
+                result = person_rgba.copy()
+                product_with_alpha = product_resized.copy()
+                alpha = product_with_alpha.split()[-1]
+                alpha = alpha.point(lambda p: int(p * (0.8 - i * 0.1)))  # Varying opacity
+                product_with_alpha.putalpha(alpha)
+                
+                result.paste(product_with_alpha, (overlay_x, overlay_y), product_with_alpha)
+                images.append(result.convert('RGB'))
         
         return images
         
@@ -133,23 +155,17 @@ def generate_try_on_images(
         logger.error(f"Generation error: {error}")
         raise gr.Error(f"A Generation Error Occurred: {error}", title="Generation Error")
 
-def generate_with_vertex_ai(
-    person_image: Image.Image,
-    product_image: Image.Image,
-    base_steps: int = 32,
-    image_count: int = 1,
-) -> List[Image.Image]:
-    """
-    Advanced implementation using Vertex AI (requires proper setup).
-    This is a placeholder for when Vertex AI Virtual Try-On is properly configured.
-    """
-    try:
-        # This would be the actual Vertex AI implementation
-        # For now, fall back to the basic implementation
-        return generate_try_on_images(person_image, product_image, base_steps, image_count)
-    except Exception as e:
-        logger.error(f"Vertex AI error: {e}")
-        return generate_try_on_images(person_image, product_image, base_steps, image_count)
+# %% SAMPLE IMAGES
+
+def load_sample_images():
+    """Load sample images for demonstration."""
+    samples = {
+        "person": [],
+        "clothing": []
+    }
+    
+    # You can add sample images here if needed
+    return samples
 
 # %% INTERFACES
 
@@ -163,17 +179,17 @@ with gr.Blocks(title=TITLE, theme=THEME, fill_width=True) as demo:
             person_image = gr.Image(
                 label="Your Photo", 
                 type="pil", 
-                height=400,
-                info="Upload a clear photo of yourself facing the camera"
+                height=400
             )
+            gr.Markdown("*Upload a clear photo of yourself facing the camera*")
             
             gr.Markdown("### Step 2: Choose Traditional Attire")
             product_image = gr.Image(
                 label="Traditional Clothing", 
                 type="pil", 
-                height=400,
-                info="Upload an image of traditional Indian clothing"
+                height=400
             )
+            gr.Markdown("*Upload an image of traditional Indian clothing*")
             
             with gr.Row():
                 base_steps = gr.Slider(
@@ -181,17 +197,18 @@ with gr.Blocks(title=TITLE, theme=THEME, fill_width=True) as demo:
                     maximum=150,
                     value=32,
                     step=1,
-                    label="Quality Steps",
-                    info="Higher value for better quality, lower for faster generation.",
+                    label="Quality Steps"
                 )
+                gr.Markdown("*Higher value for better quality (currently for demo purposes)*")
+                
                 image_count = gr.Slider(
                     minimum=1,
                     maximum=4,
                     value=1,
                     step=1,
-                    label="Number of Images",
-                    info="Generate up to 4 variations.",
+                    label="Number of Images"
                 )
+                gr.Markdown("*Generate up to 4 variations*")
             
             generate_button = gr.Button("✨ Try On Traditional Attire", variant="primary", size="lg")
             
@@ -204,6 +221,15 @@ with gr.Blocks(title=TITLE, theme=THEME, fill_width=True) as demo:
                 show_label=False
             )
     
+    # Examples section
+    gr.Markdown("### 💡 Tips for Best Results")
+    gr.Markdown("""
+    - Use clear, well-lit photos
+    - Face the camera directly
+    - Choose clothing images with transparent or simple backgrounds
+    - Traditional Indian attire works best (kurtas, sarees, lehengas, etc.)
+    """)
+    
     generate_button.click(
         fn=generate_try_on_images,
         inputs=[person_image, product_image, base_steps, image_count],
@@ -215,11 +241,14 @@ with gr.Blocks(title=TITLE, theme=THEME, fill_width=True) as demo:
 # %% ENTRYPOINTS
 
 if __name__ == "__main__":
+    print("🎨 Starting Bharat Heritage Virtual Try-On...")
+    print(f"🌐 Server will be available at: http://localhost:7860")
+    
     demo.queue()
     demo.launch(
         favicon_path=FAVICON if os.path.exists(FAVICON) else None,
-        pwa=True,
         server_name="0.0.0.0",
         server_port=7860,
-        share=False
+        share=False,
+        show_error=True
     )
