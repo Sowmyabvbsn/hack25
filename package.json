@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node start-servers.js",
     "backend": "cd QUIZB/backendQ && node server.js",
-    "dev": "node dev-server.js"
+    "dev": "node dev-server.js",
+    "virtual-tryon": "python virtual-tryon-server.py"
   },
   "keywords": [
     "indian",

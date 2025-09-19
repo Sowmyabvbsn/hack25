@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bharat Heritage - Virtual Try-On</title>
+  
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(120deg, #eecda3 0%, #ef629f 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .header {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 6px 48px rgba(0,0,0,.10);
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, orange, white, green);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+    }
+    
+    .header p {
+      font-size: 1.1rem;
+      color: #666;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .gradio-container {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 6px 48px rgba(0,0,0,.10);
+      margin-bottom: 2rem;
+    }
+    
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .feature-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 6px 48px rgba(0,0,0,.10);
+      text-align: center;
+    }
+    
+    .feature-card .icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    
+    .feature-card h3 {
+      color: #e67e22;
+      margin-bottom: 1rem;
+    }
+    
+    .back-button {
+      display: inline-block;
+      background: #e67e22;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-bottom: 2rem;
+      transition: background-color 0.3s ease;
+    }
+    
+    .back-button:hover {
+      background: #d35400;
+    }
+    
+    .status-message {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0;
+      text-align: center;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="main.html" class="back-button">← Back to Bharat Heritage</a>
+    
+    <div class="header">
+      <h1>Virtual Try-On Experience</h1>
+      <p>
+        Experience the beauty of traditional Indian attire with our AI-powered virtual try-on technology. 
+        Upload your photo and see how you look in authentic Indian garments like sarees, lehengas, kurtas, and more.
+      </p>
+    </div>
+    
+    <div class="features">
+      <div class="feature-card">
+        <div class="icon">👗</div>
+        <h3>Traditional Wear</h3>
+        <p>Try on authentic Indian garments including sarees, lehengas, kurtas, sherwanis, and more traditional outfits.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="icon">🤖</div>
+        <h3>AI-Powered</h3>
+        <p>Advanced AI technology creates realistic virtual try-on experiences with high-quality image generation.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="icon">⚡</div>
+        <h3>Instant Results</h3>
+        <p>Get your virtual try-on results in seconds and generate multiple variations to find your perfect look.</p>
+      </div>
+    </div>
+    
+    <div class="gradio-container">
+      <div class="status-message">
+        <h3>🚀 Starting Virtual Try-On Service...</h3>
+        <p>The virtual try-on interface is loading. This may take a few moments.</p>
+        <p><strong>Note:</strong> This feature requires Google Cloud Vertex AI configuration. Please ensure your environment variables are properly set.</p>
+      </div>
+      
+      <div id="gradio-app">
+        <!-- Gradio app will be embedded here -->
+      </div>
+    </div>
+    
+    <div class="feature-card">
+      <h3>How to Use</h3>
+      <ol style="text-align: left; max-width: 600px; margin: 0 auto;">
+        <li><strong>Upload Your Photo:</strong> Choose a clear, well-lit photo of yourself</li>
+        <li><strong>Select Traditional Wear:</strong> Upload an image of the Indian garment you want to try on</li>
+        <li><strong>Adjust Settings:</strong> Set quality steps and number of images to generate</li>
+        <li><strong>Generate:</strong> Click the "Try On Traditional Wear" button</li>
+        <li><strong>View Results:</strong> See yourself wearing the traditional outfit!</li>
+      </ol>
+    </div>
+  </div>
+  
+  <script>
+    // Check if Gradio is available and embed the app
+    function checkGradioStatus() {
+      fetch('/virtual-tryon-status')
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'ready') {
+            // Embed Gradio app
+            const iframe = document.createElement('iframe');
+            iframe.src = 'http://localhost:7860';
+            iframe.width = '100%';
+            iframe.height = '800px';
+            iframe.style.border = 'none';
+            iframe.style.borderRadius = '8px';
+            
+            const gradioContainer = document.getElementById('gradio-app');
+            gradioContainer.innerHTML = '';
+            gradioContainer.appendChild(iframe);
+          } else {
+            setTimeout(checkGradioStatus, 2000);
+          }
+        })
+        .catch(error => {
+          console.log('Gradio service not available:', error);
+          document.querySelector('.status-message').innerHTML = `
+            <h3>⚠️ Virtual Try-On Service Configuration Required</h3>
+            <p>To use the virtual try-on feature, please:</p>
+            <ol style="text-align: left; max-width: 600px; margin: 1rem auto;">
+              <li>Set up Google Cloud Vertex AI credentials</li>
+              <li>Configure the required environment variables</li>
+              <li>Run the virtual-tryon.py script</li>
+            </ol>
+            <p>For now, you can explore our <a href="QUIZB/ecom.html">Heritage Marketplace</a> to discover traditional Indian products.</p>
+          `;
+        });
+    }
+    
+    // Start checking for Gradio service
+    setTimeout(checkGradioStatus, 1000);
+  </script>
+</body>
+</html>
